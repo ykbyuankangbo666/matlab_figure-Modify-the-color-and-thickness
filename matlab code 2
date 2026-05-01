@@ -1,0 +1,25 @@
+clc; clear;
+
+files = dir('*.fig');
+
+for k = 1:length(files)
+
+    filename = files(k).name;
+
+    % 打开（可见，等价于手动打开）
+    fig = openfig(filename);
+
+    % 生成 png 文件名
+    [~, name, ~] = fileparts(filename);
+    pngname = [name, '.png'];
+
+    % ⭐相当于 File → Save As → PNG
+    saveas(fig, pngname);
+
+    % 关闭
+    close(fig);
+
+    fprintf('已保存: %s\n', pngname);
+end
+
+disp('全部完成！');
