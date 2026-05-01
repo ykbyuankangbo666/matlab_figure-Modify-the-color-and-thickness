@@ -1,0 +1,41 @@
+clc; clear;
+
+files = dir('*.fig');
+
+% ⭐只保留两种颜色
+colors = [
+    0.00 0.45 0.74;
+    0.85 0.33 0.10
+];
+
+for k = 1:length(files)
+
+    fig = openfig(files(k).name);
+
+    lgd = findall(fig, 'Type', 'Legend');
+
+    if isempty(lgd)
+        warning('文件 %s 没有 legend，跳过', files(k).name);
+        close(fig);
+        continue;
+    end
+
+    lines = lgd.PlotChildren;
+    lines = flipud(lines);
+
+    fprintf('处理 %s：找到 %d 条曲线\n', files(k).name, length(lines));
+
+    % ⭐只改前2条
+    for j = 1:min(2, length(lines))
+        set(lines(j), ...
+            'Color', colors(j,:), ...
+            'LineWidth', 1.5);
+    end
+
+    newname = ['new_' files(k).name];
+    saveas(fig, newname);
+
+    close(fig);
+end
+
+disp('全部完成！');
