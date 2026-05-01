@@ -1,0 +1,50 @@
+clc; clear;
+
+% 获取所有 fig 文件
+files = dir('*.fig');
+
+% 三种颜色（按 legend 顺序）
+colors = [
+    0.00 0.45 0.74;
+    0.85 0.33 0.10;
+    0.00 0.00 0.00
+];
+
+for k = 1:length(files)
+
+    % 打开 figure
+    fig = openfig(files(k).name);
+
+    % 找 legend
+    lgd = findall(fig, 'Type', 'Legend');
+
+    if isempty(lgd)
+        warning('文件 %s 没有 legend，跳过', files(k).name);
+        close(fig);
+        continue;
+    end
+
+    % ⭐关键：从 legend 获取真正的曲线
+    lines = lgd.PlotChildren;
+
+    % 顺序调整（MATLAB 通常是反的）
+    lines = flipud(lines);
+
+    fprintf('处理 %s：找到 %d 条有效曲线\n', files(k).name, length(lines));
+
+    % 修改颜色 + 线宽
+    for j = 1:min(3, length(lines))
+        set(lines(j), ...
+            'Color', colors(j,:), ...
+            'LineWidth', 1.5);
+    end
+
+    % ⭐另存（不要覆盖原文件）
+    newname = ['new_' files(k).name];
+    saveas(fig, newname);
+
+    close(fig);
+
+end
+
+disp('全部处理完成！');
